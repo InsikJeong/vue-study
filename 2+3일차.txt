@@ -1,0 +1,28 @@
+v-text : 문자열로 가져옴
+v-html : html문서로 가져옴
+v-bind:src  : 이미지 링크
+
+filter
+
+Data Binding, Event Binding
+1) Array 처리
+2) Event Binding : v-on Directive 사용
+<p v-on:EventName="JS code">블라블라</p>
+<p @EventName="JS code">블라블라</p>
+vue에서 this 사용하려면 화살표 함수 사용 ㄴㄴ
+
+2. Computed Property (계산된 속성)
+ - computed 옵션
+ - watch 옵션
+* 데이터 업데이트 순서
+1) 인스턴스 데이터를 표시
+2) 데이터 변경
+3) 계산된 속성이 재계산
+4) beforeUpdate 이벤트 호출
+5) 가상DOM 업데이트
+6) 웹 브라우저의 DOM 수정
+7) updated 이벤트 호출
+
+3. Directive 추가
+1) v-show : 표현식 값이 거짓이면 엘리먼트의 inline style을 display:none 으로 설정
+2) v-if/v-else/v-else-if : 표현식 값에 따라 참이면 v-if의 엘리먼트가 표시 거짓이면 v-else엘리먼트가 표시

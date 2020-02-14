@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>애완 용품 샵</title>
+    <script src="https://unpkg.com/vue"></script>
+    <!-- Vuejs 라이브러리 임폴트  -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="navbar navbar-default">
+                <div class="navbar-header">
+                    <h1 v-text="sitename"></h1>
+                </div>
+                <div class="nav navbar-nav navbar-right cart">
+                    <button class="btn btn-default btn-lg"
+                    @click="showCheckOut">
+                        <span class="glyphicon glyphicon-shopping-cart">
+                            {{cartItemCount}}
+                        </span>
+                        <span>체크아웃</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="row">
+                <div v-if='showProduct'>
+                    <div class="col-md-2 col-md-offset-1">
+                        <figure>
+                            <img v-bind:src="product.image" alt="">
+                            <!-- v-bind:Directive, 양방향 바인딩 
+                                축약표현  :src="product.image"
+                            -->
+                        </figure>
+                    </div>
+                    <div class="col-md-6 col-md-offset-2 description">
+                        <h1 v-text="product.title"></h1>
+                        <p v-html="product.description"></p>
+                        <!-- v-html: 디렉티브 html표시하는 $().html(), el.innerHTML()
+                        사용할 때 XSS(Cross Site Scripting) 공격 대비해야함  -->
+                        <!-- <p v-text="product.price" class="price"></p> -->
+                        <p class="price" >{{product.price | formatPrice}}</p>
+                        <!-- 필터 적용하기: {{property|filterfunctionname}} -->
+                        <button class="btn btn-primary btn-lg" 
+                            v-on:click="addToCart"
+                            v-if="canAddToCart"><!--재고가 6개가되면 버튼이 사라짐-->
+                            <!-- v-show="canAddToCart" 둘이 차이가 있음--> 
+                            장바구니 담기
+                        </button>
+    
+                        <button class="btn btn-primary btn-lg" 
+                            disabled="true"
+                            v-else>
+                            장바구니 담기안되는 버튼
+                        </button>
+                        <!-- @click="addToCart" 도 가능 -->
+                    </div>    
+                </div>
+                <div v-else>
+                    <!-- <h1>체크아웃 화면</h1> -->
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            애완용품샵 장바구니
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <h4><strong>정보를 입력하시오.</strong></h4>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <strong>이름:</strong>
+                                    <input v-model.trim="order.fName" type="text" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>성:</strong>
+                                    <input v-model.trim="order.lName" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12"><strong>주소:</strong></div>
+                                <div class="col-md-12">
+                                    <input v-model.trim="order.addr" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-2"><strong>구:</strong></div>
+                                <div class="col-md-12">
+                                    <input v-model.trim="order.ku" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-2">
+                                    <strong>도시:</strong>
+                                    <select v-model="order.city" name="" id="" class="form-control">
+                                        <option disable="true" value="">도시</option>
+                                        <!-- <option v-bind:value="cities.SL">{{cities.SL}}</option>
+                                        <option v-bind:value="cities.DG">{{cities.DG}}</option>
+                                        <option v-bind:value="cities.PK">{{cities.PK}}</option>
+                                        <option v-bind:value="cities.IC">{{cities.IC}}</option>
+                                        <option v-bind:value="cities.GM">{{cities.GM}}</option> -->
+                                        <option v-for="(city, key) in cities" v-bind:value="city"v-bind:key="key">
+                                            {{key}}.{{city}}
+                                        </option>
+                                        <!-- key는 index를 의미 -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-4 col-md-offset-4"><strong>우편번호:</strong></div>
+                                <div class="col-md-4 col-md-offset-4">
+                                    <input v-model.number="order.zipcode" type="number" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-6 boxes">
+                                    <input v-model="order.gift" v-bind:true-value="order.sendGift" v-bind:false-value="order.dontSendGift" id="gift" type="checkbox" value="true">
+                                    <label for="gift">선물보내기</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-6 boxes">
+                                    <input type="radio" name="" id="home" v-bind:value="order.home" v-model="order.method">
+                                    <label for="home">자택</label>
+                                    <input type="radio" name="" id="business" v-bind:value="order.business" v-model="order.method">
+                                    <label for="business">직장</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-6"><button type="submit" class="btn btn-primary submit" @click="submitform">주문하기</button></div>
+                            </div>
+
+                            <div class="col-md-12 verify">
+                                <pre>
+                                    이름: {{order.fName}}
+                                    성: {{order.lName}}
+                                    주소: {{order.addr}}
+                                    구: {{order.ku}}
+                                    도시: {{order.city}}
+                                    우편번호: {{typeof(order.zipcode)}}
+                                    주소지: {{order.method}}
+                                    선물: {{order.gift}}
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        var LOG_DISPLAY = true;
+        const webstore = new Vue(
+            {
+                el:"#app",
+                data:{
+                    sitename:"Vue.js를 이용한 애완용품 샵",
+                    showProduct:true,
+                    cities:{
+                        SL:"서울",
+                        DG:"대구",
+                        PK:"부산",
+                        IC:"인천",
+                        GM:"구미",
+                    },
+                    order:{
+                        fName:'',
+                        lname:'',
+                        addr:'',
+                        ku:'',
+                        city:"",
+                        zipcode:"",
+                        method:'자택 주소',
+                        gift:"선물로 보내기",
+                        sendGift:"선물로 보내기",
+                        dontSendGift:"선물로 보내지 않기",
+                        home:"자택 주소",
+                        business:"회사 주소",
+                    },
+                    product:{
+                        id:1001,
+                        title:"고양이 사료",
+                        description: "당신의 고양이를 위한 <em>거부할수 없는</em>, 유기농 2500원짜리 사료입니다.",
+                        price:2500,
+                        image:"assets/images/product-fullsize.png",
+                        avaliableInventory: 6,//재고가 6개
+                    },
+                    cart:[],
+                },
+                computed:{
+                    cartItemCount:function(){
+                        return this.cart.length||"";
+                    },
+                    canAddToCart(){
+                        return this.product.avaliableInventory>this.cartItemCount;
+                    }
+                },
+                methods:{
+                    addToCart:function(){
+                        this.cart.push(this.product.id);
+                    },
+                    showCheckOut:function(){
+                        this.showProduct = this.showProduct? false:true;
+                    },
+                    submitform(){
+                        alert("주문완료");
+                        //백엔드와 통신하는 코드가 있어야함 프론트만 할거라 alert 한거 
+                    },
+                },
+                filters:{//filter 옵션에 필터 함수 작성
+                        formatPrice:function(price){// price값을 받아 가격표시형식으로 변환
+                            if(!parseInt(price)){
+                                return "";
+                            }
+                            if(price>99999){
+                                var priceString = (price/100).toFixed(2);
+                                var priceArray = priceString.split("").reverse();
+                                var index=3;
+                                while(priceArray.length>index+3){
+                                    priceArray.splice(index+3,0,",");
+                                    index+=4;
+                                    return priceArray.reverse().join("")+"원";
+                                }
+                            }
+                            else{
+                                return (price/100).toFixed(2)+"원";
+                            }
+                        }
+                    },
+                beforeCreate:function(){
+                    if(LOG_DISPLAY){
+                        console.log("생성 전 이벤트");
+                    }
+                },
+                created:function(){
+                    if(LOG_DISPLAY){
+                        console.log("생성 후 이벤트");
+                    }
+                },
+                beforeMount:function(){
+                    if(LOG_DISPLAY){
+                        console.log("마운트 전 이벤트");
+                    }
+                },
+                mounted:function(){
+                    if(LOG_DISPLAY){
+                        console.log("마운트 후 이벤트");
+                    }
+                },
+                beforeUpdate:function(){
+                    if(LOG_DISPLAY){
+                        console.log("수정 전 이벤트");
+                    }
+                },
+                updated:function(){
+                    if(LOG_DISPLAY){
+                        console.log("수정 후 이벤트");
+                    }
+                },
+                beforeDestroy:function(){
+                    if(LOG_DISPLAY){
+                        console.log("소멸 전 이벤트");
+                    }
+                },
+                destroyed:function(){
+                    if(LOG_DISPLAY){
+                        console.log("소멸 후 이벤트");
+                    }
+                },
+            }
+        );
+    </script>
+</body>
+</html>

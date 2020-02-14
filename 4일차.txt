@@ -1,0 +1,29 @@
+<<form and Input>>
+1. 양방향 바인딩 : 뷰의 변화를 뷰 모델에 반영하고 뷰 모델의 변화를 뷰에 반영
+-Directive 추가
+v-model : input, textarea, select 등의 폼태그 내부에서 사용되는 입력과 관련된 Directive
+단방향 바인딩? v-once, v-bind
+
+2.checkbox 다루기
+- v-model
+- v-bind를 활용하여 true일때의 값과 false일떄의 값을 지정할 수 있다.
+  v-bind:true-value
+  v-bind:false-value
+
+3. radio버튼 다루기
+- v-bind:
+  v-bind:value
+
+4. select 옵션 다루기
+- v-bind:value
+
+5. Directive 추가
+- v-for
+  for-in 유사
+ Vue에서 v-for의 처리 성능을 생각하여 key를 결정하는 것을 권장
+ key의 이상적인 값은 고유하게 식별가능한 ID로 결정하기를 권장 
+ v-for의 key항목을 설정할 것을 권장하는 관례
+
+* v-model의 수식어
+1) .number : 자동으로 숫자로 변환 //안쓰면 문자열로 반환됨
+<input v-model.number="age" type="number"
