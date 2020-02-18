@@ -1,0 +1,33 @@
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue"></script> <!-- Vue.js 라이브러리 import-->
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <!-- 부모 템플릿 -->
+        <my-component></my-component>
+        <h1>{{msg}}</h1>
+    </div>
+    <script>
+        const ChildComponent = {
+            template:'<div>이건,지역 컴포넌트야!</div>' //자식 템플릿
+        };  
+        const webstore = new Vue({
+            el:"#app",
+            components:{
+                'my-components':ChildComponent
+                //myComponent 도 됨
+                //MyComponent 도 됨
+
+            },
+            data:{
+                msg:'확인용 메시지',
+
+            }
+        })
+    </script>
+</body>
+</html>

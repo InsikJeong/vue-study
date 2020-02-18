@@ -1,0 +1,41 @@
+<<Component>>
+- 컴포넌트 
+- 구성품, 구성요소, 구성성분
+- Vuejs : 웹페이지의 화면 구성을 관리하면서 나타내기 위해
+  한 화면을 여러개의 요소로 나눈 것 : 컴포넌트
+- 장점 : 재활용, 재사용, 코드량 줄이기, 단순화
+ 코드에서 반복되는 부분을 이해하기 쉬운 작은 논리적 단위로 분리
+<div>
+    <ul>
+       <p> 컴포넌트 예</p>
+    </ul>
+</div>
+
+===> 컴포넌트화
+
+<my-component> </my-component>
+or
+<<my-component />
+0. 컴포넌트의 등록
+- 컴포넌트의 이름 : 소문자와 -를 조합하는 것이 관례
+
+* 사용자정의 키워드 작성법: case
+- camelCase
+- snake_case
+- kebab-case
+- pascalCade
+
+ex) my-component
+1. 컴포넌트의 종류
+1) 지역 컴포넌트 
+Vue 인스턴스 객체 생성 옵션에서 정의 
+2) 전역 컴포넌트 
+Vue..component(tagName,options)를 이용하여 등록
+tagName.String
+options.json object
+
+2. 컴포넌트간의 관계
+- 부모-자식
+- 부모 템플릿(부모 컴포넌트)의 data를 자식 컴포넌트에서 사용하고 싶은 경우 발생
+- props 속성 이용하여 부모정보를 자식에게 전달
+단방향(자식은 읽기만 가능, 수정 불가)

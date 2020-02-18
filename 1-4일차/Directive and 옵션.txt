@@ -1,0 +1,17 @@
+<<Directive>>
+v-text
+v-bind
+v-html
+v-on
+v-show
+v-if
+v-else
+v-if-else
+v-model
+v-for
+
+<<option>>
+methods
+filters
+computed
+watch
